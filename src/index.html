@@ -14,11 +14,13 @@
             <button id="nav-dashboard">Dashboard</button>
             <button id="nav-match">Match Analysis</button>
             <button id="nav-picklist">Picklist Tool</button>
+            <button id="nav-matchup">Matchup Generator</button>
             </nav>
             <main id="content-area">
                 <section id="dashboard" class="page hidden"></section>
                 <section id="matchAnalysis" class="page hidden"></section>
                 <section id="picklist" class="page hidden"></section>
+                <section id="matchupGenerator" class="page hidden"></section>
             </main>
         </div>
 
@@ -29,6 +31,9 @@
             <div class="form-group">
                 <label for="tba-key">TBA API Key:</label>
                 <textarea id="tba-key" placeholder="Paste your TBA API key here"></textarea>
+
+                <label for="season">Season</label>
+                <input type="number" id="season" placeholder="season" required />
             </div>
 
             <br><br>

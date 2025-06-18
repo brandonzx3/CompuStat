@@ -6,12 +6,17 @@ contextBridge.exposeInMainWorld('versions', {
     electron: () => process.versions.electron
 });
 
-contextBridge.exposeInMainWorld("COMPUTSTAT", {
+contextBridge.exposeInMainWorld("COMPUSTAT", {
     currentSeason: () => ipcRenderer.invoke("currentSeason"),
-    TBAstatus: () => ipcRenderer.invoke("TBAstatus")
+    TBAstatus: () => ipcRenderer.invoke("TBAstatus"),
+    getSeasonStats: () => ipcRenderer.invoke('getSeasonStats')
 });
 
 contextBridge.exposeInMainWorld("SETTINGS", {
     getSettings: () => ipcRenderer.invoke("getSettings"),
     saveSettings: (value) => ipcRenderer.invoke("saveSettings", value)
+})
+
+contextBridge.exposeInMainWorld("TEAMDATA", {
+    getEPABatch: (teamNumbers) => ipcRenderer.invoke('get-epa-batch', teamNumbers),
 })

@@ -1,0 +1,28 @@
+<h2>Matchup Generator</h2>
+
+<form id="matchup-form" class="matchup-form">
+  <div class="alliance red">
+    <h3>Red Alliance</h3>
+    <input type="number" id="red-1" placeholder="Team 1" required />
+    <input type="number" id="red-2" placeholder="Team 2" required />
+    <input type="number" id="red-3" placeholder="Team 3" required />
+  </div>
+
+  <div class="alliance blue">
+    <h3>Blue Alliance</h3>
+    <input type="number" id="blue-1" placeholder="Team 1" required />
+    <input type="number" id="blue-2" placeholder="Team 2" required />
+    <input type="number" id="blue-3" placeholder="Team 3" required />
+  </div>
+
+    <div class="form-actions">
+        <button type="submit">Generate Matchup</button>
+    </div>
+</form>
+
+<div id="results" class="hidden results">
+  <h3>Results</h3>
+  <p>Red EPA: <span id="red-epa"></span></p>
+  <p>Blue EPA: <span id="blue-epa"></span></p>
+  <p><strong>Prediction:</strong> <span id="prediction"></span></p>
+</div>
