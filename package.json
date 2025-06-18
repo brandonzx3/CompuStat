@@ -1,0 +1,15 @@
+{
+  "name": "compustat",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "electron": "^36.4.0"
+  }
+}
