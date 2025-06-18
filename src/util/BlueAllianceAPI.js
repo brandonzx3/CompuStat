@@ -10,3 +10,8 @@ export async function sendRequest(endpoint, key) {
         return null;
     }
 }
+
+export async function getEvents(year, key) {
+    const data = await sendRequest(`events/${year}`, key);
+    return data;
+}

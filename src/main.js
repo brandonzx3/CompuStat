@@ -8,6 +8,8 @@ import * as settings from "./Settings.js"
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
+settings.init(app.getPath('userData'));
+
 function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
@@ -22,7 +24,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-    settings.init(app.getPath('userData'));
 
     ipcMain.handle("currentSeason", async () => {
         const result = await blueAlliance.sendRequest("status");
@@ -49,7 +50,7 @@ app.whenReady().then(() => {
 
         const [teams, events, topTeam] = await Promise.all([
             statbotics.getTeams(statusRequest.current_season),
-            statbotics.getEvents(statusRequest.current_season),
+            blueAlliance.getEvents(statusRequest.current_season, settings.getSettings().TBAKey),
             statbotics.getTopTeam(statusRequest.current_season)
         ]);
 

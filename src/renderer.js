@@ -83,20 +83,19 @@ async function openSettings() {
 // Close modal
 closeBtn.addEventListener('click', () => {
     console.log(TBAKEY.innerText)
-    let settings = {
-        TBAKey: TBAKEY.value.trim(),
-        season: seasonEl.value.trim()
-    }
+    
+    let settings = getSettingsFromClient();
 
     if(checkSettings(settings).valid) {
         SETTINGS.saveSettings(settings);
         modal.classList.add('hidden');
+        window.location.reload();
     }
 });
 
 // click outside to close
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
+modal.addEventListener('click', async (e) => {
+    if (e.target === modal && checkSettings(await SETTINGS.getSettings()).valid) {
         modal.classList.add('hidden');
     }
 });
@@ -116,4 +115,11 @@ function checkSettings(settings) {
         valid: missing.length === 0,
         missing // array of missing keys
     };
+}
+
+function getSettingsFromClient() {
+    return {
+        TBAKey: TBAKEY.value.trim(),
+        season: seasonEl.value.trim()
+    }
 }
