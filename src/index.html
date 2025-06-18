@@ -4,12 +4,39 @@
         <meta charset="UTF-8" />
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"/>
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"/>
-        <title>Hello from Electron renderer!</title>
+        <title>CompusStat</title>
+        <link rel="stylesheet" href="styles/main.css">
     </head>
     <body>
-        <h1>Hello from Electron renderer!</h1>
-        
-        <button id="openMatchBuilder">Match Builder</button>
+        <div class="container">
+            <nav class="sidebar">
+            <button id="nav-settings">Settings</button>
+            <button id="nav-dashboard">Dashboard</button>
+            <button id="nav-match">Match Analysis</button>
+            <button id="nav-picklist">Picklist Tool</button>
+            </nav>
+            <main id="content-area">
+                <!-- We'll dynamically load and inject each page into these containers -->
+                <section id="dashboard" class="page hidden"></section>
+                <section id="matchAnalysis" class="page hidden"></section>
+                <section id="picklist" class="page hidden"></section>
+            </main>
+        </div>
+
+        <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Settings</h2>
+            
+            <div class="form-group">
+                <label for="tba-key">TBA API Key:</label>
+                <textarea id="tba-key" placeholder="Paste your TBA API key here"></textarea>
+            </div>
+
+            <br><br>
+
+            <button id="close-settings">Save</button>
+        </div>
+        </div>
     </body>
     <script src="renderer.js"></script>
 </html>

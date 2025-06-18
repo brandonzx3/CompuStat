@@ -1,31 +1,29 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import * as blueAlliance from './BlueAllianceAPI.js';
+import * as blueAlliance from './util/BlueAllianceAPI.js';
 import * as settings from "./Settings.js"
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
-app.whenReady().then(() => {
+function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
         height: 800,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
         }
     });
 
-    settings.init();
-
+    win.setMenu(null);
     win.loadFile(path.join(__dirname, "index.html"));
 
-    handleMatchBuilder();
+}
 
-    ipcMain.handle("openMatchBuilder", () => {
-        console.log("loading match builder");
-        win.loadFile(path.join(__dirname, "matchbuilder/matchBuilder.html"));
-    });
+
+app.whenReady().then(() => {
+    settings.init(app.getPath('userData'));
 
     ipcMain.handle("currentSeason", async () => {
         const result = await blueAlliance.sendRequest("status");
@@ -39,8 +37,6 @@ app.whenReady().then(() => {
 
     ipcMain.handle("getSettings", () => settings.getSettings())
     ipcMain.handle("saveSettings", (_event, value) => settings.saveSettings(value))
-})
 
-function handleMatchBuilder() {
-    ipcMain.handle("ping", async () => await blueAlliance.sendRequest("status"))
-}
+    createWindow();
+})
