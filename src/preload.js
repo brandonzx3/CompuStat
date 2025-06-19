@@ -18,5 +18,6 @@ contextBridge.exposeInMainWorld("SETTINGS", {
 })
 
 contextBridge.exposeInMainWorld("TEAMDATA", {
-    getEPABatch: (teamNumbers) => ipcRenderer.invoke('get-epa-batch', teamNumbers),
+    getEPABatch: (teamNumbers) => ipcRenderer.invoke('getEpaBatch', teamNumbers),
+    getTeam: (teamNumber) => ipcRenderer.invoke("getTeam", teamNumber)
 })

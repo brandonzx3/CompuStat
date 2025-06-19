@@ -12,6 +12,9 @@ export async function sendRequest(endpoint, key) {
 }
 
 export async function getEvents(year, key) {
-    const data = await sendRequest(`events/${year}`, key);
-    return data;
+    return await sendRequest(`events/${year}`, key);
+}
+
+export async function getTeam(teamNumber, key) {
+    return await sendRequest(`team/frc${teamNumber}`, key);
 }

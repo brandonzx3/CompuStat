@@ -8,8 +8,6 @@ import * as settings from "./Settings.js"
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
-settings.init(app.getPath('userData'));
-
 function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
@@ -25,6 +23,8 @@ function createWindow() {
 
 app.whenReady().then(() => {
 
+    settings.init(app.getPath('userData'));
+
     ipcMain.handle("currentSeason", async () => {
         const result = await blueAlliance.sendRequest("status");
         if(result == null) return null;
@@ -38,10 +38,36 @@ app.whenReady().then(() => {
     ipcMain.handle("getSettings", () => settings.getSettings())
     ipcMain.handle("saveSettings", (_event, value) => settings.saveSettings(value))
 
-    ipcMain.handle('get-epa-batch', async (_event, teamNumbers) => {
+    handleTeamStats();
+
+    createWindow();
+});
+
+function handleTeamStats() {
+    ipcMain.handle('getEpaBatch', async (_event, teamNumbers) => {
         let season = settings.getSettings().season
         const results = await Promise.all(teamNumbers.map(num => statbotics.getTeamEPA(num, season)));
         return results;
+    });
+
+    ipcMain.handle("getTeam", async (_event, teamNumber) => {
+        const [statboticsData, tbaData] = await Promise.all([
+            statbotics.getTeam(teamNumber, settings.getSettings().season),
+            blueAlliance.getTeam(teamNumber, settings.getSettings().TBAKey)
+        ]);
+        
+        return {
+            name: tbaData.nickname,
+            fullName: tbaData.name,
+            state: tbaData.state_prov,
+            city: tbaData.city,
+            country: tbaData.country,
+            number: tbaData.team_number,
+            rookie_year: tbaData.rookie_year,
+            school_name: tbaData.school_name,
+            website: tbaData.website,
+            epa: statboticsData.epa
+        }
     });
 
     ipcMain.handle('getSeasonStats', async () => {
@@ -79,6 +105,4 @@ app.whenReady().then(() => {
             avgEPA: avgEPA.toFixed(2)
         };
     });
-
-    createWindow();
-})
+}
