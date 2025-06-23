@@ -24,6 +24,7 @@ function createWindow() {
 app.whenReady().then(() => {
 
     settings.init(app.getPath('userData'));
+    console.log(settings.getSettings());
 
     ipcMain.handle("currentSeason", async () => {
         const result = await blueAlliance.sendRequest("status");
@@ -66,7 +67,8 @@ function handleTeamStats() {
             rookie_year: tbaData.rookie_year,
             school_name: tbaData.school_name,
             website: tbaData.website,
-            epa: statboticsData.epa
+            epa: statboticsData.epa,
+            record: statboticsData.record
         }
     });
 

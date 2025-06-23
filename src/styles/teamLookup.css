@@ -1,0 +1,98 @@
+#teamInfo {
+  background: #f9fafc;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+#teamInfo h2 {
+  margin-top: 0;
+  font-size: 1.6rem;
+  color: #333;
+}
+
+#teamInfo p {
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+
+#teamInfo strong {
+  color: #111;
+}
+
+#teamInfo a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+#teamInfo a:hover {
+  text-decoration: underline;
+}
+
+.team-card {
+  background: #f9fafc;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.team-header {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.team-header h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+  color: #2c3e50;
+}
+
+.team-header .full-name {
+  font-style: italic;
+  color: #666;
+  margin: 0;
+}
+
+.team-info p {
+  margin: 0.4rem 0;
+}
+
+.summary-sections {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  border-radius: 8px;
+  flex: 1 1 250px;
+  min-width: 220px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+.summary-card h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.summary-card p {
+  margin: 0.25rem 0;
+}
+
+.search-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.search-section input {
+  flex: 1;
+  padding: 0.75rem;
+}

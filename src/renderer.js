@@ -1,10 +1,11 @@
-const pageIds = ['dashboard', 'matchAnalysis', 'picklist', 'matchupGenerator'];
+const pageIds = ['dashboard', 'matchAnalysis', 'picklist', 'matchupGenerator', 'teamLookup'];
 
 const pageScripts = {
-    dashboard: () => import('./pages/dashboard.js'),
-    matchupGenerator: () => import('./pages/matchup.js'),
-    picklist: () => import('./pages/picklist.js'),
-    matchAnalysis: () => import('./pages/matchAnalysis.js'),
+    dashboard: () => import('./scripts/dashboard.js'),
+    matchupGenerator: () => import('./scripts/matchup.js'),
+    picklist: () => import('./scripts/picklist.js'),
+    matchAnalysis: () => import('./scripts/matchAnalysis.js'),
+    teamLookup: () => import('./scripts/teamLookup.js'),
 };
 
 function showPage(pageId) {
@@ -16,26 +17,43 @@ function showPage(pageId) {
 }
 
 function loadPageOnce(pageId) {
-  const section = document.getElementById(pageId);
-  if (!section.dataset.loaded) {
-    fetch(`pages/${pageId}.html`)
-      .then(res => res.text())
-      .then(async html => {
-        section.innerHTML = html;
-        section.dataset.loaded = "true";
+    const section = document.getElementById(pageId);
 
-        showPage(pageId);
-
-        if (pageScripts[pageId]) {
-          const mod = await pageScripts[pageId]();
-          mod.init?.();
-
-          if (pageId === 'dashboard') attachDashboardTileEvents();
+    document.querySelectorAll('link[data-page-style]').forEach(link => {
+        if (link.dataset.pageStyle && link.dataset.pageStyle !== pageId) {
+            link.remove();
         }
-      });
-  } else {
-    showPage(pageId);
-  }
+    });
+
+    const existingStyle = document.querySelector(`link[data-page-style="${pageId}"]`);
+    if (!existingStyle) {
+        const style = document.createElement('link');
+        style.rel = 'stylesheet';
+        style.href = `styles/${pageId}.css`;
+        style.dataset.pageStyle = pageId;
+        document.head.appendChild(style);
+    }
+
+    if (!section.dataset.loaded) {
+        fetch(`pages/${pageId}.html`)
+            .then(res => res.text())
+            .then(async html => {
+                section.innerHTML = html;
+                section.dataset.loaded = "true";
+
+                await new Promise(requestAnimationFrame);
+                showPage(pageId);
+
+                if (pageScripts[pageId]) {
+                    const mod = await pageScripts[pageId]();
+                    mod.init?.();
+
+                    if (pageId === 'dashboard') attachDashboardTileEvents();
+                }
+            });
+    } else {
+        showPage(pageId);
+    }
 }
 
 function attachDashboardTileEvents() {
@@ -49,6 +67,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('nav-match').addEventListener('click', () => loadPageOnce('matchAnalysis'));
     document.getElementById('nav-picklist').addEventListener('click', () => loadPageOnce('picklist'));
     document.getElementById('nav-matchup').addEventListener('click', () => loadPageOnce('matchupGenerator'));
+    document.getElementById('nav-teamLookup').addEventListener('click', () => loadPageOnce('teamLookup'));
 
     loadPageOnce('dashboard'); // initial load
 

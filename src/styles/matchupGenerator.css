@@ -1,0 +1,52 @@
+.form-group {
+  width: 100%;
+  max-width: 500px;
+}
+
+.form-group textarea {
+  height: 3rem;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.form-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Matchup UI */
+.matchup-form {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.alliance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 200px;
+}
+
+.alliance.red {
+  background-color: #ffecec;
+  border: 2px solid #ff5c5c;
+}
+
+.alliance.blue {
+  background-color: #e6f0ff;
+  border: 2px solid #5c9aff;
+}
+
+.results {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
