@@ -18,3 +18,11 @@ export async function getEvents(year, key) {
 export async function getTeam(teamNumber, key) {
     return await sendRequest(`team/frc${teamNumber}`, key);
 }
+
+export async function getTeamsAtEvent(eventCode, key) {
+    return await sendRequest(`event/${eventCode}/teams`, key);
+}
+
+export async function getOPRs(eventCode, key) {
+    return await sendRequest(`event/${eventCode}/oprs`, key);
+}

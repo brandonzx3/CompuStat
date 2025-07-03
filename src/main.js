@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import * as blueAlliance from './util/BlueAllianceAPI.js';
 import * as statbotics from './util/StatboticsAPI.js'
 import * as settings from "./Settings.js"
+import * as fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -40,8 +41,10 @@ app.whenReady().then(() => {
     ipcMain.handle("saveSettings", (_event, value) => settings.saveSettings(value))
 
     handleTeamStats();
+    handlePicklist();
 
     createWindow();
+    console.log(getPicklistPath("test1", "test2"));
 });
 
 function handleTeamStats() {
@@ -106,5 +109,71 @@ function handleTeamStats() {
             : null,
             avgEPA: avgEPA.toFixed(2)
         };
+    });
+}
+
+function getPicklistPath(eventCode, name) {
+    return path.join(app.getPath("userData"), "picklists", `${eventCode}-${name}.json`);
+}
+
+async function getCombinedTeamData(eventCode) {
+    const tbaKey = settings.getSettings().TBAKey;
+    try {
+        const tbaTeams = await blueAlliance.getTeamsAtEvent(eventCode, tbaKey);
+        if (!Array.isArray(tbaTeams)) throw new Error("Failed to fetch TBA team list.");
+
+        const oprsData = await blueAlliance.getOPRs(eventCode, tbaKey);
+        const oprs = oprsData?.oprs || {};
+        const dprs = oprsData?.dprs || {};
+        const ccwms = oprsData?.ccwms || {};
+
+        const result = [];
+
+        for(const team of tbaTeams) {
+            const teamNumber = team.team_number;
+            const teamKey = `frc${teamNumber}`;
+            const epaBreakdown = await statbotics.getEPABreakdown(teamNumber, eventCode);
+
+            result.push({
+                teamNumber: teamNumber,
+                nickname: team.nickname || team.name || `Team ${teamNumber}`,
+                opr: oprs[teamKey] ?? 0,
+                dpr: dprs[teamKey] ?? 0,
+                ccwm: ccwms[teamKey] ?? 0,
+                epaBreakdown: epaBreakdown
+            });
+        }
+        return result;
+    } catch(err) {
+        console.error(`Error in getCombinedTeamData(${eventCode}):`, err);
+        return [];
+    }
+}
+
+function handlePicklist() {
+    ipcMain.handle("picklist:save", (_event, picklistData) => {
+        const filePath = getPicklistPath(picklistData.eventCode, picklistData.name);
+        fs.writeFileSync(filePath, JSON.stringify(picklistData, null, 2));
+        return true;
+    });
+
+    ipcMain.handle("picklist:loadAll", () => {
+        const dir = path.join(app.getPath("userData"), "picklists");
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        const files = fs.readdirSync(dir).filter(f => f.endsWith(".json"));
+        console.log(files);
+        return files.map(file => {
+            const content = fs.readFileSync(path.join(dir, file), "utf-8");
+            return JSON.parse(content);
+        });
+    });
+
+    ipcMain.handle("picklist:getTeams", async (event, eventCode) => {
+        const res = await fetch(`https://api.statbotics.io/v3/event/${eventCode}/teams`);
+        return await res.json();
+    });
+
+    ipcMain.handle("picklist:getTeamData", async (event, eventCode) => {
+        return await getCombinedTeamData(eventCode);
     });
 }

@@ -21,3 +21,10 @@ contextBridge.exposeInMainWorld("TEAMDATA", {
     getEPABatch: (teamNumbers) => ipcRenderer.invoke('getEpaBatch', teamNumbers),
     getTeam: (teamNumber) => ipcRenderer.invoke("getTeam", teamNumber)
 })
+
+contextBridge.exposeInMainWorld("PicklistAPI", {
+    loadAll: () => ipcRenderer.invoke("picklist:loadAll"),
+    save: (data) => ipcRenderer.invoke("picklist:save", data),
+    getTeams: (eventCode) => ipcRenderer.invoke("picklist:getTeams", eventCode),
+    getTeamData: (eventCode) => ipcRenderer.invoke("picklist:getTeamData", eventCode),
+});

@@ -1,0 +1,29 @@
+<body>
+  <!-- Main View -->
+  <div id="picklistListView">
+    <button id="newPicklistBtn" class="button">+ New Picklist</button>
+    <div id="picklistGrid" class="container"></div>
+  </div>
+
+  <!-- Editor View -->
+  <div id="picklistEditorView" style="display: none;">
+    <button id="returnToListBtn" class="button">← Back to Picklists</button>
+    <h2 id="editorTitle"></h2>
+    <div id="weightsEditor"></div>
+    <button id="sortByWeightsBtn" class="button">Sort by Weights</button>
+    <button id="savePicklistBtn" class="button">Save Picklist</button>
+    <table id="teamTable"></table>
+  </div>
+
+  <div id="newPicklistModal" class="picklist-modal" style="display: none;">
+  <div class="picklist-modal-content">
+    <h2>Create New Picklist</h2>
+    <label>Name:</label>
+    <input type="text" id="modalPicklistName" /><br><br>
+    <label>Event Code:</label>
+    <input type="text" id="modalEventCode" /><br><br>
+    <button id="modalCreateBtn" class="button">Create</button>
+    <button id="modalCancelBtn" class="button">Cancel</button>
+  </div>
+</div>
+</body>

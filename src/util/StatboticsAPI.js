@@ -84,3 +84,17 @@ export async function getTeam(teamNumber, year) {
 
     return await res.json();
 }
+
+export async function getTeamEvent(teamNumber, eventCode) {
+    const res = await fetch(`https://api.statbotics.io/v3/team_event/${teamNumber}/${eventCode}`);
+    if (!res.ok) return {};
+    const json = await res.json();
+    return json;
+}
+
+export async function getEPABreakdown(teamNumber, eventCode) {
+    const res = await fetch(`https://api.statbotics.io/v3/team_event/${teamNumber}/${eventCode}`);
+    if (!res.ok) return {};
+    const json = await res.json();
+    return json.epa?.breakdown || {};
+}
