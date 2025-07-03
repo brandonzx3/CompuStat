@@ -8,6 +8,11 @@ export function init() {
     const modalCreate = document.getElementById("modalCreateBtn");
     const modalCancel = document.getElementById("modalCancelBtn");
 
+    const customizeBtn = document.getElementById("customizeFieldsBtn");
+    const fieldModal = document.getElementById("fieldSelectorModal");
+    const fieldCheckboxes = document.getElementById("fieldCheckboxes");
+    const applyBtn = document.getElementById("applyFieldSelectionBtn");
+
     function showListView() {
         document.getElementById("picklistListView").style.display = "block";
         document.getElementById("picklistEditorView").style.display = "none";
@@ -32,6 +37,56 @@ export function init() {
     document.getElementById("returnToListBtn").addEventListener("click", () => {
     currentPicklist = null;
         showListView();
+    });
+
+    customizeBtn.addEventListener("click", () => {
+        fieldModal.style.display = "flex";
+        fieldCheckboxes.innerHTML = "";
+
+        const allFields = new Set();
+        Object.values(currentPicklist.teams).forEach(team => {
+            Object.keys(team).forEach(key => allFields.add(key));
+        });
+
+        [...allFields].forEach(field => {
+            if (field === "nickname") return; // nickname shouldn't be weighted
+            const wrapper = document.createElement("div");
+            wrapper.className = "field-option";
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `field-${field}`;
+            checkbox.value = field;
+            checkbox.checked = currentPicklist.weights[field] !== undefined;
+
+            const label = document.createElement("label");
+            label.htmlFor = `field-${field}`;
+            label.innerText = field;
+
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+            fieldCheckboxes.appendChild(wrapper);
+        });
+    });
+
+    applyBtn.addEventListener("click", () => {
+        // Get selected checkboxes
+        const selected = fieldCheckboxes.querySelectorAll("input:checked");
+
+        // Save selected fields to the picklist
+        const selectedFields = Array.from(selected).map(cb => cb.value);
+        currentPicklist.selectedFields = selectedFields;
+
+        // Rebuild weights object to only include selected fields
+        const newWeights = {};
+        selectedFields.forEach(field => {
+            newWeights[field] = currentPicklist.weights[field] ?? 0;
+        });
+        currentPicklist.weights = newWeights;
+
+        // Hide modal and re-render UI
+        fieldModal.style.display = "none";
+        renderWeightsEditor(currentPicklist);
+        renderTeamTable(currentPicklist);
     });
 
 
@@ -73,6 +128,7 @@ export function init() {
             name,
             eventCode,
             weights: { opr: 1 },
+            selectedFields: ["opr"],
             customFields: [],
             teams: {},
             picklistOrder: []
@@ -99,6 +155,12 @@ export function init() {
 
     function openPicklist(picklist) {
         currentPicklist = picklist;
+        currentPicklist._fieldStats = computeFieldStats(picklist.teams);
+
+        if (!currentPicklist.selectedFields) {
+            currentPicklist.selectedFields = Object.keys(currentPicklist.weights);
+        }
+
         document.getElementById("editorTitle").innerText = `${picklist.name} (${picklist.eventCode})`;
         renderWeightsEditor(picklist);
         renderTeamTable(picklist);
@@ -109,20 +171,14 @@ export function init() {
         const container = document.getElementById("weightsEditor");
         container.innerHTML = "";
 
-        const allFields = new Set();
-        Object.values(picklist.teams).forEach(team =>
-            Object.keys(team).forEach(key => allFields.add(key))
-        );
-
-        allFields.forEach(field => {
-            if (field === "nickname") return;
+        Object.keys(picklist.weights).forEach(field => {
             const label = document.createElement("label");
             label.innerText = `${field}: `;
             const input = document.createElement("input");
             input.type = "number";
-            input.value = picklist.weights[field] ?? 0;
+            input.value = picklist.weights[field];
             input.addEventListener("change", () => {
-            picklist.weights[field] = parseFloat(input.value);
+                picklist.weights[field] = parseFloat(input.value);
             });
 
             container.appendChild(label);
@@ -135,28 +191,54 @@ export function init() {
         const table = document.getElementById("teamTable");
         table.innerHTML = "";
 
-        // Collect all unique fields
-        const allFields = new Set();
-        Object.values(picklist.teams).forEach(team =>
-            Object.keys(team).forEach(key => allFields.add(key))
-        );
+        const fields = ["teamNumber", "nickname", ...(picklist.selectedFields ?? Object.keys(picklist.weights))];
 
-        const fields = ["teamNumber", "nickname", ...Array.from(allFields).filter(f => f !== "nickname")];
-
-        // Create header
         const header = document.createElement("tr");
         fields.forEach(field => {
             const th = document.createElement("th");
             th.innerText = field;
             header.appendChild(th);
         });
-        header.appendChild(document.createElement("th")).innerText = "Score";
+        const scoreTh = document.createElement("th");
+        scoreTh.innerText = "Score";
+        header.appendChild(scoreTh);
         table.appendChild(header);
 
-        // Rows
+        let draggedTeamNum = null;
+
         picklist.picklistOrder.forEach(teamNum => {
             const team = picklist.teams[teamNum];
             const row = document.createElement("tr");
+            row.setAttribute("draggable", true);
+            row.dataset.teamNumber = teamNum;
+
+            row.addEventListener("dragstart", () => {
+                draggedTeamNum = teamNum;
+                row.style.opacity = "0.5";
+            });
+
+            row.addEventListener("dragend", () => {
+                row.style.opacity = "1";
+            });
+
+            row.addEventListener("dragover", (e) => e.preventDefault());
+
+            row.addEventListener("drop", (e) => {
+                e.preventDefault();
+                const targetTeamNum = row.dataset.teamNumber;
+                const fromIndex = picklist.picklistOrder.indexOf(draggedTeamNum);
+                const toIndex = picklist.picklistOrder.indexOf(targetTeamNum);
+                if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+                    const updated = [...picklist.picklistOrder];
+                    const [moved] = updated.splice(fromIndex, 1);
+                    updated.splice(toIndex, 0, moved);
+                    picklist.picklistOrder = updated;
+                    renderTeamTable(picklist);
+                }
+            });
+
+            row.addEventListener("dragenter", () => row.classList.add("drag-over"));
+            row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
 
             fields.forEach(field => {
                 const td = document.createElement("td");
@@ -171,17 +253,47 @@ export function init() {
             const score = calculateScore(team, picklist.weights);
             const scoreCell = document.createElement("td");
             scoreCell.innerText = score.toFixed(2);
+
+            row.addEventListener("dragenter", () => row.classList.add("drag-over"));
+            row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
             row.appendChild(scoreCell);
 
             table.appendChild(row);
         });
     }
 
+    function computeFieldStats(teams) {
+        const stats = {};
+        Object.values(teams).forEach(team => {
+            for (const key in team) {
+                if (typeof team[key] === "number") {
+                    if (!stats[key]) {
+                        stats[key] = { min: team[key], max: team[key] };
+                    } else {
+                        stats[key].min = Math.min(stats[key].min, team[key]);
+                        stats[key].max = Math.max(stats[key].max, team[key]);
+                    }
+                }
+            }
+        });
+        return stats;
+    }
+
     function calculateScore(teamData, weights) {
         let score = 0;
         for (const key in weights) {
-            if (weights[key] && teamData[key] !== undefined) {
-            score += weights[key] * teamData[key];
+            const weight = weights[key];
+            const value = teamData[key];
+            const stats = currentPicklist._fieldStats?.[key];
+
+            if (
+                weight &&
+                typeof value === "number" &&
+                stats &&
+                stats.max !== stats.min
+            ) {
+                const normalized = (value - stats.min) / (stats.max - stats.min);
+                score += weight * normalized;
             }
         }
         return score;

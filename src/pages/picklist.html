@@ -1,21 +1,21 @@
-<body>
-  <!-- Main View -->
-  <div id="picklistListView">
-    <button id="newPicklistBtn" class="button">+ New Picklist</button>
-    <div id="picklistGrid" class="container"></div>
-  </div>
+<!-- Main View -->
+<div id="picklistListView">
+  <button id="newPicklistBtn" class="button">+ New Picklist</button>
+  <div id="picklistGrid" class="container"></div>
+</div>
 
-  <!-- Editor View -->
-  <div id="picklistEditorView" style="display: none;">
-    <button id="returnToListBtn" class="button">← Back to Picklists</button>
-    <h2 id="editorTitle"></h2>
-    <div id="weightsEditor"></div>
-    <button id="sortByWeightsBtn" class="button">Sort by Weights</button>
-    <button id="savePicklistBtn" class="button">Save Picklist</button>
-    <table id="teamTable"></table>
-  </div>
+<!-- Editor View -->
+<div id="picklistEditorView" style="display: none;">
+  <button id="returnToListBtn" class="button">← Back to Picklists</button>
+  <h2 id="editorTitle"></h2>
+  <div id="weightsEditor"></div>
+  <button id="sortByWeightsBtn" class="button">Sort by Weights</button>
+  <button id="customizeFieldsBtn" class="button">Customize Fields</button>
+  <button id="savePicklistBtn" class="button">Save Picklist</button>
+  <table id="teamTable"></table>
+</div>
 
-  <div id="newPicklistModal" class="picklist-modal" style="display: none;">
+<div id="newPicklistModal" class="picklist-modal" style="display: none;">
   <div class="picklist-modal-content">
     <h2>Create New Picklist</h2>
     <label>Name:</label>
@@ -26,4 +26,12 @@
     <button id="modalCancelBtn" class="button">Cancel</button>
   </div>
 </div>
-</body>
+
+<div id="fieldSelectorModal" class="weight-modal" style="display: none;">
+  <div class="weight-modal-content">
+    <h3>Select Fields</h3>
+    <div id="fieldCheckboxes" style="max-height: 300px; overflow-y: auto;"></div>
+    <br>
+    <button id="applyFieldSelectionBtn" class="button">Apply</button>
+  </div>
+</div>
