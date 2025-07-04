@@ -117,3 +117,30 @@ button:hover {
   box-sizing: border-box;
   font-family: inherit;
 }
+
+.notification-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.notification {
+  padding: 1em;
+  border-radius: 8px;
+  color: #fff;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: fadeInOut 4s ease forwards;
+  font-family: sans-serif;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}

@@ -28,3 +28,7 @@ contextBridge.exposeInMainWorld("PicklistAPI", {
     getTeams: (eventCode) => ipcRenderer.invoke("picklist:getTeams", eventCode),
     getTeamData: (eventCode) => ipcRenderer.invoke("picklist:getTeamData", eventCode),
 });
+
+ipcRenderer.on("show-notification", (_, data) => {
+  window.dispatchEvent(new CustomEvent("notify", { detail: data }));
+});

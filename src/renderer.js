@@ -142,3 +142,21 @@ function getSettingsFromClient() {
         season: seasonEl.value.trim()
     }
 }
+
+function showNotification({ title, message, color = '#333' }) {
+    const container = document.getElementById("notificationContainer");
+    const notif = document.createElement("div");
+    notif.className = "notification";
+    notif.style.backgroundColor = color;
+    notif.innerHTML = `<strong>${title}</strong><br>${message}`;
+
+    container.appendChild(notif);
+
+    setTimeout(() => {
+    notif.remove();
+    }, 4000);
+}
+
+window.addEventListener("notify", (e) => {
+    showNotification(e.detail);
+});

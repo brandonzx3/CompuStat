@@ -9,8 +9,10 @@ import * as fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
+let win;
+
 function createWindow() {
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         width: 1200,
         height: 800,
         webPreferences: {
@@ -44,7 +46,6 @@ app.whenReady().then(() => {
     handlePicklist();
 
     createWindow();
-    console.log(getPicklistPath("test1", "test2"));
 });
 
 function handleTeamStats() {
@@ -153,7 +154,12 @@ async function getCombinedTeamData(eventCode) {
 function handlePicklist() {
     ipcMain.handle("picklist:save", (_event, picklistData) => {
         const filePath = getPicklistPath(picklistData.eventCode, picklistData.name);
-        fs.writeFileSync(filePath, JSON.stringify(picklistData, null, 2));
+        try {
+            fs.writeFileSync(filePath, JSON.stringify(picklistData, null, 2));
+            sendNotification("Saved", "Picklist saved successfully", "#28a745");
+        } catch(e) {
+            sendNotification("Failed", "Picklist failed to save", "#eb4034");
+        }
         return true;
     });
 
@@ -175,5 +181,13 @@ function handlePicklist() {
 
     ipcMain.handle("picklist:getTeamData", async (event, eventCode) => {
         return await getCombinedTeamData(eventCode);
+    });
+}
+
+function sendNotification(title, message, color) {
+    win.webContents.send("show-notification", {
+        title: title,
+        message: message,
+        color: color
     });
 }

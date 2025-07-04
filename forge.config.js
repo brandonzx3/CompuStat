@@ -4,7 +4,7 @@ const config = {
         icon: 'images/icons/icon'
     },
 
-    buildIdentifier: 'indev-0.1',
+    buildIdentifier: 'indev-0.2',
 };
 
 export default config;

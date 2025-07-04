@@ -119,10 +119,11 @@ export function init() {
     modalCreate.addEventListener("click", async () => {
         const name = modalName.value.trim();
         const eventCode = modalEvent.value.trim();
-        if (!name || !eventCode) return alert("Both fields required.");
+        if (!name || !eventCode) return showNotification({ title: "Failed", message: "Both fields required", color: "#eb4034" });
 
         modal.style.display = "none";
 
+        showNotification({ title: "Creating Picklist", message: "This might take a while", color: "#eb4034" });
         const teams = await PicklistAPI.getTeamData(eventCode);
         const picklist = {
             name,
@@ -310,6 +311,5 @@ export function init() {
 
     document.getElementById("savePicklistBtn").addEventListener("click", async () => {
         await PicklistAPI.save(currentPicklist);
-        alert("Picklist saved.");
     });
 }
