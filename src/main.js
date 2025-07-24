@@ -10,6 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
 let win;
+let currentSeason;
 
 function createWindow() {
     win = new BrowserWindow({
@@ -24,16 +25,16 @@ function createWindow() {
 
 }
 
-app.whenReady().then(() => {
-
+app.whenReady().then(async () => {
     settings.init(app.getPath('userData'));
     console.log(settings.getSettings());
 
-    ipcMain.handle("currentSeason", async () => {
-        const result = await blueAlliance.sendRequest("status");
-        if(result == null) return null;
-        return result.current_season;
-    })
+    currentSeason = await getCurrentSeason();
+    console.log(currentSeason);
+
+    ipcMain.handle("currentSeason", () => {
+        return currentSeason;
+    });
 
     ipcMain.handle("TBAstatus", async () => {
         return await blueAlliance.sendRequest("status", settings.getSettings().TBAKey);
@@ -190,4 +191,10 @@ function sendNotification(title, message, color) {
         message: message,
         color: color
     });
+}
+
+async function getCurrentSeason() {
+    const result = await blueAlliance.sendRequest("status");
+    if(result == null) return null;
+    return result.current_season;
 }

@@ -1,5 +1,7 @@
 const pageIds = ['dashboard', 'matchAnalysis', 'picklist', 'matchupGenerator', 'teamLookup'];
 
+let today = new Date();
+
 const pageScripts = {
     dashboard: () => import('./scripts/dashboard.js'),
     matchupGenerator: () => import('./scripts/matchup.js'),
@@ -7,6 +9,8 @@ const pageScripts = {
     matchAnalysis: () => import('./scripts/matchAnalysis.js'),
     teamLookup: () => import('./scripts/teamLookup.js'),
 };
+
+let maxSeason;
 
 function showPage(pageId) {
     pageIds.forEach(id => {
@@ -63,6 +67,9 @@ function attachDashboardTileEvents() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+    maxSeason = await COMPUSTAT.currentSeason();
+    console.log(maxSeason);
+
     document.getElementById('nav-dashboard').addEventListener('click', () => loadPageOnce('dashboard'));
     document.getElementById('nav-match').addEventListener('click', () => loadPageOnce('matchAnalysis'));
     document.getElementById('nav-picklist').addEventListener('click', () => loadPageOnce('picklist'));
@@ -79,15 +86,14 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // just settings stuff
 const modal = document.getElementById('settings-modal');
-const openBtn = document.getElementById('nav-settings');
-const closeBtn = document.getElementById('close-settings');
+const openSettingsBtn = document.getElementById('nav-settings');
+const saveSettingsBtn = document.getElementById('close-settings');
 
 // settings options
 const TBAKEY = document.getElementById("tba-key");
 const seasonEl = document.getElementById("season");
 
-// Open modal
-openBtn.addEventListener('click', async () => {
+openSettingsBtn.addEventListener('click', async () => {
     openSettings();
 });
 
@@ -99,16 +105,19 @@ async function openSettings() {
     modal.classList.remove('hidden');
 }
 
-// Close modal
-closeBtn.addEventListener('click', () => {
-    console.log(TBAKEY.innerText)
-    
+saveSettingsBtn.addEventListener('click', () => {    
     let settings = getSettingsFromClient();
 
     if(checkSettings(settings).valid) {
-        SETTINGS.saveSettings(settings);
-        modal.classList.add('hidden');
-        window.location.reload();
+        if(settings.season < 2022) {
+            showNotification({ title: "Failed", message: "Season need to be at least 2022", color: "#eb4034" });
+        } else if(settings.season > today.getFullYear()) {
+            showNotification({ title: "Failed", message: "CompuStat cannot predict the future yet", color: "#eb4034" });
+        } else {
+            SETTINGS.saveSettings(settings);
+            modal.classList.add('hidden');
+            window.location.reload();
+        }
     }
 });
 
@@ -143,7 +152,7 @@ function getSettingsFromClient() {
     }
 }
 
-function showNotification({ title, message, color = '#333' }) {
+function showNotification({ title, message, color = '#eb4034' }) {
     const container = document.getElementById("notificationContainer");
     const notif = document.createElement("div");
     notif.className = "notification";
