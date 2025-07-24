@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld("TEAMDATA", {
 contextBridge.exposeInMainWorld("PicklistAPI", {
     loadAll: () => ipcRenderer.invoke("picklist:loadAll"),
     save: (data) => ipcRenderer.invoke("picklist:save", data),
+    delete: (data) => ipcRenderer.invoke("picklist:delete", data),
     getTeams: (eventCode) => ipcRenderer.invoke("picklist:getTeams", eventCode),
     getTeamData: (eventCode) => ipcRenderer.invoke("picklist:getTeamData", eventCode),
 });

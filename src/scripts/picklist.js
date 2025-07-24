@@ -20,6 +20,7 @@ export function init() {
         document.getElementById("returnToListBtn").style.display = "none";
         document.getElementById("sortByWeightsBtn").style.display = "none";
         document.getElementById("savePicklistBtn").style.display = "none";
+        document.getElementById("deletePicklistBtn").style.display = "none";
     }
 
     showListView();
@@ -31,6 +32,7 @@ export function init() {
         document.getElementById("returnToListBtn").style.display = "inline-block";
         document.getElementById("sortByWeightsBtn").style.display = "inline-block";
         document.getElementById("savePicklistBtn").style.display = "inline-block";
+        document.getElementById("deletePicklistBtn").style.display = "inline-block"
     }
 
     
@@ -311,5 +313,15 @@ export function init() {
 
     document.getElementById("savePicklistBtn").addEventListener("click", async () => {
         await PicklistAPI.save(currentPicklist);
+        console.log(currentPicklist);
+    });
+
+    document.getElementById("deletePicklistBtn").addEventListener("click", () => {
+        const confirmed = confirm("Are you sure you want to delete this picklist?");
+        if (!confirmed) return;
+
+        PicklistAPI.delete(currentPicklist);
+        showListView()
+        loadPicklists();
     });
 }

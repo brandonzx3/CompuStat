@@ -196,3 +196,7 @@ body {
   min-width: 100px;
   font-weight: 500;
 }
+
+#deletePicklistBtn {
+  background-color: red;
+}

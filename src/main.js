@@ -183,6 +183,11 @@ function handlePicklist() {
     ipcMain.handle("picklist:getTeamData", async (event, eventCode) => {
         return await getCombinedTeamData(eventCode);
     });
+
+    ipcMain.handle("picklist:delete", (event, picklist) => {
+        const filePath = getPicklistPath(picklist.eventCode, picklist.name);
+        fs.rmSync(filePath);
+    });
 }
 
 function sendNotification(title, message, color) {
