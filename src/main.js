@@ -155,6 +155,7 @@ async function getCombinedTeamData(eventCode) {
 function handlePicklist() {
     ipcMain.handle("picklist:save", (_event, picklistData) => {
         const filePath = getPicklistPath(picklistData.eventCode, picklistData.name);
+        console.log(filePath);
         try {
             fs.writeFileSync(filePath, JSON.stringify(picklistData, null, 2));
             sendNotification("Saved", "Picklist saved successfully", "#28a745");
@@ -166,6 +167,7 @@ function handlePicklist() {
 
     ipcMain.handle("picklist:loadAll", () => {
         const dir = path.join(app.getPath("userData"), "picklists");
+        console.log(dir);
         if (!fs.existsSync(dir)) fs.mkdirSync(dir);
         const files = fs.readdirSync(dir).filter(f => f.endsWith(".json"));
         console.log(files);

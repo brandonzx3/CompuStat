@@ -130,8 +130,8 @@ export function init() {
         const picklist = {
             name,
             eventCode,
-            weights: { opr: 1 },
-            selectedFields: ["opr"],
+            weights: { total_points: 1 },
+            selectedFields: ["total_points"],
             customFields: [],
             teams: {},
             picklistOrder: []
